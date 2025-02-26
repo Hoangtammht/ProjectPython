@@ -10,9 +10,9 @@ from app import db
 
 blueprint = Blueprint('auth', __name__)
 
-VALID_USERNAME = 'customer-vietqrtest-user2468'
-VALID_PASSWORD = 'Y3VzdG9tZXItdmlldHFydGVzdC11c2VyMjQ2ODpZM1Z6ZEc5dFpYSXRkbWxsZEhGeWRHVnpkQzExYzJWeU1qUTJPQT09'
-SECRET_KEY = 'your-256-bit-secret'
+VALID_USERNAME = 'customer-phongtroabc-user25247'
+VALID_PASSWORD = 'Y3VzdG9tZXItcGhvbmd0cm9hYmMtdXNlcjI1MjQ3'
+SECRET_KEY = 'secret'
 
 # API để tạo token
 @blueprint.route('/vqr/api/token_generate', methods=['POST'])
