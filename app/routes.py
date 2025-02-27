@@ -16,39 +16,6 @@ SECRET_KEY = 'secret'
 
 # API để tạo token
 @blueprint.route('/vqr/api/token_generate', methods=['POST'])
-@swag_from({
-    'tags': ['Authentication'],
-    'summary': 'Generate JWT Token',
-    'description': 'API để tạo JWT token từ username và password.',
-    'parameters': [
-        {
-            'name': 'Authorization',
-            'in': 'header',
-            'type': 'string',
-            'required': True,
-            'description': 'Basic Auth (Base64 encoded username:password)'
-        }
-    ],
-    'responses': {
-        200: {
-            'description': 'Token generated successfully',
-            'schema': {
-                'type': 'object',
-                'properties': {
-                    'access_token': {'type': 'string'},
-                    'token_type': {'type': 'string'},
-                    'expires_in': {'type': 'integer'}
-                }
-            }
-        },
-        400: {
-            'description': 'Missing or invalid Authorization header'
-        },
-        401: {
-            'description': 'Invalid credentials'
-        }
-    }
-})
 def generate_token():
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Basic '):
@@ -82,25 +49,6 @@ def generate_token():
 
 
 @blueprint.route('/bank/api/transaction-sync', methods=['POST'])
-@swag_from({
-    'tags': ['Transaction'],
-    'summary': 'Process transaction sync',
-    'description': 'API xử lý giao dịch từ VietQR.',
-    'parameters': [
-        {
-            'name': 'Authorization',
-            'in': 'header',
-            'type': 'string',
-            'required': True,
-            'description': 'Bearer token'
-        }
-    ],
-    'responses': {
-        200: {'description': 'Transaction processed successfully'},
-        401: {'description': 'Invalid or expired token'},
-        400: {'description': 'Bad request'}
-    }
-})
 def transaction_sync():
     auth_header = request.headers.get('Authorization')
     if not auth_header or not auth_header.startswith('Bearer '):
@@ -112,6 +60,7 @@ def transaction_sync():
         return jsonify({"error": "INVALID_TOKEN", "message": "Invalid or expired token"}), 401
 
     data = request.json
+
 
     try:
         new_transaction = Transaction(
@@ -129,8 +78,9 @@ def transaction_sync():
             urlLink=data.get('urlLink'),
             sign=data.get('sign')
         )
-        db.session.add(new_transaction)
-        db.session.commit()
+
+        print(f"Transaction: {new_transaction.__dict__}")
+
 
         return jsonify({
             "error": False,
@@ -140,7 +90,6 @@ def transaction_sync():
         }), 200
 
     except Exception as e:
-        db.session.rollback()
         return jsonify({"error": True, "errorReason": "TRANSACTION_FAILED", "toastMessage": str(e), "object": None}), 400
 
 
